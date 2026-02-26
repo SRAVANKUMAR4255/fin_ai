@@ -1,0 +1,22 @@
+click>=8.1.8
+# Keep crewai at version 0.130.0
+# Other package versions are flexible and can be changed
+# Only change crewai version if there are critical dependency conflicts that cannot be resolved by other means
+crewai==0.130.0 
+crewai-tools==0.47.1
+fastapi==0.110.3
+google-ai-generativelanguage==0.6.4
+
+Jinja2==3.1.4
+
+
+oauthlib==3.2.2
+onnxruntime==1.22.0
+openai>=1.68.2
+
+pandas==2.2.2
+pillow==10.3.0
+
+protobuf==4.25.3
+pydantic>=2.4.2
+pydantic_core>=2.14.0
