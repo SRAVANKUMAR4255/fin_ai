@@ -1,38 +1,52 @@
-# Financial Document Analyzer - Debug Assignment
+# Financial Document Analyzer - Debug Challenge
 
-## Project Overview
-A comprehensive financial document analysis system that processes corporate reports, financial statements, and investment documents using AI-powered analysis agents.
+## Overview
 
-## Getting Started
+This project is an AI-powered financial document analysis system built using CrewAI and FastAPI.
 
-### Install Required Libraries
-```sh
-pip install -r requirement.txt
-```
+The original repository contained multiple deterministic bugs, broken tool integrations, incorrect agent configurations, and unsafe prompt engineering.
 
-### Sample Document
-The system analyzes financial documents like Tesla's Q2 2025 financial update.
+This submission includes a fully debugged, working implementation with improved stability, proper tool integration, and structured agent behavior.
 
-**To add Tesla's financial document:**
-1. Download the Tesla Q2 2025 update from: https://www.tesla.com/sites/default/files/downloads/TSLA-Q2-2025-Update.pdf
-2. Save it as `data/sample.pdf` in the project directory
-3. Or upload any financial PDF through the API endpoint
+---
 
-**Note:** Current `data/sample.pdf` is a placeholder - replace with actual Tesla financial document for proper testing.
+## Bugs Identified & Fixed
 
-# You're All Not Set!
-🐛 **Debug Mode Activated!** The project has bugs waiting to be squashed - your mission is to fix them and bring it to life.
+### 1. Incorrect CrewAI Imports
+- Fixed incorrect import paths (`crewai.agents` → `crewai`).
 
-## Debugging Instructions
+### 2. Invalid Tool Implementation
+- Rewrote `FinancialDocumentTool` to properly extend `BaseTool`.
+- Implemented `_run()` method correctly.
+- Fixed tool instantiation in Agents and Tasks.
 
-1. **Identify the Bug**: Carefully read the code in each file and understand the expected behavior. There is a bug in each line of code. So be careful.
-2. **Fix the Bug**: Implement the necessary changes to fix the bug.
-3. **Test the Fix**: Run the project and verify that the bug is resolved.
-4. **Repeat**: Continue this process until all bugs are fixed.
+### 3. Pydantic Validation Errors
+- Resolved incorrect tool references causing schema validation failures.
 
-## Expected Features
-- Upload financial documents (PDF format)
-- AI-powered financial analysis
-- Investment recommendations
-- Risk assessment
-- Market insights
+### 4. FastAPI File Upload Errors
+- Installed and configured `python-multipart`.
+- Added safe file handling and cleanup logic.
+
+### 5. LLM Configuration Issues
+- Corrected LiteLLM model naming (`openai/gpt-4o-mini`).
+- Removed manual API key injection.
+- Ensured `.env` loading via `python-dotenv`.
+
+### 6. Unsafe / Hallucination-Based Prompts
+- Rewrote agent goals to remove:
+  - Fabricated URLs
+  - Fake financial advice
+  - Hallucinated market claims
+
+### 7. RPM Throttling Misconfiguration
+- Removed `max_rpm=1` which caused artificial rate blocking.
+
+---
+
+## Setup Instructions
+
+### 1. Clone Repository
+
+```bash
+git clone <your-repo-link>
+cd financial-document-analyzer
