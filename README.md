@@ -42,232 +42,57 @@ This submission includes a fully debugged, working implementation with improved 
 - Removed `max_rpm=1` which caused artificial rate blocking.
 
 ---
-
-2.2 Broken Tool Implementation
-Problem
-
-Tool did not extend BaseTool
-
-_run() method missing
-
-Tool passed incorrectly to Agent
-
-Pydantic validation errors occurred
-
-Fix
-
-Rewrote tool properly:
-
-class FinancialDocumentTool(BaseTool):
-    name = "Financial Document Reader"
-    description = "Reads financial PDF documents"
-
-    def _run(self, path: str = "data/sample.pdf") -> str:
-        loader = PyPDFLoader(path)
-        docs = loader.load()
-        return "\n".join([doc.page_content for doc in docs])
-
-Correct instantiation:
-
-tools=[FinancialDocumentTool()]
-2.3 Incorrect LLM Model Configuration
-Problem
-
-Model configured as:
-
-model="gpt-4o-mini"
-
-LiteLLM failed to route provider correctly.
-
-Fix
-model="openai/gpt-4o-mini"
-
-Also removed manual API key injection and relied on environment variables.
-
-2.4 Unsafe Prompt Engineering
-
-Original prompts encouraged:
-
-Hallucinated URLs
-
-Fake financial advice
-
-Fabricated investment strategies
-
-Contradictory outputs
-
-This is unsafe in financial systems.
-
-Fix
-
-Rewrote all agent goals to:
-
-Extract real financial indicators
-
-Avoid fabrication
-
-Provide structured insights
-
-Highlight risks responsibly
-
-2.5 Pydantic Validation Failures
-
-Errors like:
-
-ValidationError: Input should be instance of BaseTool
-
-Caused by passing function instead of tool instance.
-
-Fix
-
-Ensured tools inherit from BaseTool and are instantiated.
-
-2.6 FastAPI Multipart Error
-Form data requires "python-multipart"
-Fix
-
-Added:
-
-python-multipart
-
-to requirements.txt
-
-2.7 Rate Limiting Misconfiguration
-
-Agent configured with:
-
-max_rpm=1
-
-This caused artificial throttling and execution failures.
-
-Fix
-
-Removed max_rpm constraint.
-
-2.8 Environment Variable Handling
-
-Improper API key usage and unsafe logging.
-
-Fix
-
-Used .env
-
-Loaded via python-dotenv
-
-Removed API key printing
-
-Added .env.example
-
-3. Architectural Improvements
-
-Beyond debugging, the system was improved:
-
-Clean separation of agents, tools, tasks
-
-Structured goal definitions
-
-Improved error handling in API layer
-
-Safe file cleanup in finally block
-
-Deterministic behavior enforcement
-
-4. Setup Instructions
-4.1 Clone Repository
-git clone <repo-link>
+Setup Instructions
+1. Clone the Repository
+git clone <your-repository-link>
 cd financial-document-analyzer
-4.2 Create Virtual Environment
+2. Create a Virtual Environment
+Windows
 python -m venv venv
 venv\Scripts\activate
-4.3 Install Dependencies
+Mac/Linux
+python3 -m venv venv
+source venv/bin/activate
+
+You should now see (venv) in your terminal.
+
+3. Install Dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
-4.4 Configure Environment
+4. Configure Environment Variables
 
-Create .env file:
+Create a .env file in the project root directory:
 
-OPENAI_API_KEY=your_api_key_here
-4.5 Run Server
+OPENAI_API_KEY=your_openai_api_key_here
+
+⚠️ Do NOT commit the .env file to version control.
+
+5. Run the Application
 uvicorn main:app --reload
 
-Open Swagger UI:
+The server will start at:
+
+http://127.0.0.1:8000
+6. Access API Documentation
+
+Open your browser and navigate to:
 
 http://127.0.0.1:8000/docs
-5. API Documentation
-GET /
 
-Health check endpoint.
+This opens the Swagger UI interface.
 
-Response:
+7. Test the Analyze Endpoint
 
-{
-  "message": "Financial Document Analyzer API is running"
-}
-POST /analyze
+Click POST /analyze
 
-Uploads financial PDF and returns analysis.
+Upload a financial PDF file
 
-Parameters
-Field	Type	Required
-file	PDF	Yes
-query	string	Optional
-Example CURL
-curl -X POST http://127.0.0.1:8000/analyze \
-  -F "file=@TSLA-Q2-2025-Update.pdf" \
-  -F "query=Analyze investment insights"
-6. Error Handling
+Provide an optional query
 
-The API returns structured errors:
+Click Execute
 
-422 – Validation errors
+8. Stop the Server
 
-500 – Internal processing errors
+Press:
 
-Proper cleanup of uploaded files
-
-7. Future Enhancements (Bonus Roadmap)
-
-If extended further, I would implement:
-
-Redis + Celery queue worker for concurrent processing
-
-SQLite/PostgreSQL storage for document history
-
-User authentication
-
-Response caching
-
-Structured JSON financial outputs
-
-Token usage monitoring
-
-8. Technical Stack
-
-Python 3.10+
-
-CrewAI
-
-FastAPI
-
-LiteLLM
-
-OpenAI GPT-4o-mini
-
-PyPDFLoader
-
-9. Conclusion
-
-All deterministic bugs have been resolved.
-
-The system now:
-
-Runs successfully
-
-Uses proper CrewAI tool architecture
-
-Handles file uploads safely
-
-Provides structured financial analysis
-
-Avoids hallucinated financial advice
-
-This submission demonstrates debugging ability, architecture understanding, and safe AI system design.
+CTRL + C
