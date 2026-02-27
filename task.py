@@ -1,7 +1,9 @@
-# Importing libraries and files
-from crewai import Task
+# ===============================
+# task.py — FIXED CLEAN VERSION
+# ===============================
 
-from agents import financial_analyst, verifier
+from crewai import Task
+from agents import financial_analyst, verifier  # ✅ Single import, no duplicate
 
 
 # ================================
@@ -9,6 +11,7 @@ from agents import financial_analyst, verifier
 # ================================
 analyze_financial_document = Task(
     description=(
+        "Read the financial document at path: {file_path}. "  # ✅ Fixed: file_path now passed to task
         "Analyze the uploaded financial document carefully and respond to the user's query: {query}. "
         "Extract meaningful financial insights, company performance indicators, and key risks "
         "based on the provided report."
@@ -77,6 +80,6 @@ verification = Task(
         "- Is this a financial document? (Yes/No)\n"
         "- Short reasoning for the decision"
     ),
-    agent=verifier,   # ✅ Correct agent used here
+    agent=verifier,
     async_execution=False,
 )

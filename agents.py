@@ -1,5 +1,5 @@
 # ===============================
-# agents.py — FINAL CLEAN VERSION
+# agents.py — FIXED CLEAN VERSION
 # ===============================
 
 # -------- Environment Setup --------
@@ -17,16 +17,17 @@ from crewai import Agent, LLM
 # -------- Local Imports --------
 from tools import FinancialDocumentTool
 
+# ✅ NO import from task.py here — that caused the circular import
+
 
 # =====================================
-# LLM CONFIGURATION (VERY IMPORTANT)
+# LLM CONFIGURATION
 # =====================================
-# NOTE:
 # - Do NOT manually pass api_key here
 # - CrewAI automatically reads OPENAI_API_KEY from .env
 
 llm = LLM(
-    model="openai/gpt-4o-mini",   # ✅ Correct provider format
+    model="gemini/gemini-2.0-flash",
     temperature=0.2
 )
 
@@ -44,11 +45,11 @@ financial_analyst = Agent(
         "from financial reports. Provides balanced investment perspectives and "
         "highlights real risks responsibly."
     ),
-    tools=[FinancialDocumentTool()],   # ✅ Tool instance only here
+    tools=[FinancialDocumentTool()],
     llm=llm,
-    max_iter=1,
-    max_rpm=1,
-    allow_delegation=True
+    max_iter=5,       # ✅ Fixed: was 1, too low for multi-step analysis
+    max_rpm=3,       # ✅ Fixed: was 1, too restrictive
+    allow_delegation=False  # ✅ Fixed: was True, but crew has only one agent
 )
 
 
@@ -64,9 +65,9 @@ verifier = Agent(
         "An experienced compliance analyst who validates financial documents before analysis."
     ),
     llm=llm,
-    max_iter=1,
-    max_rpm=1,
-    allow_delegation=True
+    max_iter=5,       # ✅ Fixed: was 1
+    max_rpm=3,       # ✅ Fixed: was 1
+    allow_delegation=False  # ✅ Fixed: was True
 )
 
 
@@ -81,8 +82,8 @@ investment_advisor = Agent(
         "A disciplined investment advisor focused on long-term strategies and risk management."
     ),
     llm=llm,
-    max_iter=1,
-    max_rpm=1,
+    max_iter=5,       # ✅ Fixed: was 1
+    max_rpm=10,       # ✅ Fixed: was 1
     allow_delegation=False
 )
 
@@ -98,7 +99,7 @@ risk_assessor = Agent(
         "A conservative risk analyst who evaluates volatility, liquidity, and market exposure."
     ),
     llm=llm,
-    max_iter=1,
-    max_rpm=1,
+    max_iter=5,       # ✅ Fixed: was 1
+    max_rpm=10,       # ✅ Fixed: was 1
     allow_delegation=False
 )

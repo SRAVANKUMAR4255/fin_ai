@@ -1,3 +1,7 @@
+# ===============================
+# main.py — FIXED CLEAN VERSION
+# ===============================
+
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 import os
 import uuid
@@ -7,6 +11,7 @@ from agents import financial_analyst
 from task import analyze_financial_document as analyze_task
 
 app = FastAPI(title="Financial Document Analyzer")
+
 
 # ==============================
 # Run Crew
@@ -21,7 +26,7 @@ def run_crew(query: str, file_path: str = "data/TSLA-Q2-2025-Update.pdf"):
         verbose=True
     )
 
-    # ✅ IMPORTANT FIX — pass dict using inputs=
+    # ✅ Pass both query and file_path as inputs so task description can use {file_path}
     result = financial_crew.kickoff(
         inputs={
             "query": query,
@@ -48,7 +53,6 @@ async def analyze_endpoint(
     file: UploadFile = File(...),
     query: str = Form(default="Analyze this financial document for investment insights")
 ):
-
     file_id = str(uuid.uuid4())
     file_path = f"data/financial_document_{file_id}.pdf"
 
@@ -60,10 +64,10 @@ async def analyze_endpoint(
             content = await file.read()
             f.write(content)
 
-        if not query:
+        if not query or not query.strip():
             query = "Analyze this financial document for investment insights"
 
-        # ✅ Run Crew
+        # ✅ Run Crew with both query and file_path
         response = run_crew(query=query.strip(), file_path=file_path)
 
         return {
@@ -80,11 +84,11 @@ async def analyze_endpoint(
         )
 
     finally:
-        # Cleanup file
+        # Cleanup uploaded file after processing
         if os.path.exists(file_path):
             try:
                 os.remove(file_path)
-            except:
+            except Exception:
                 pass
 
 
